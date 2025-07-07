@@ -3,9 +3,8 @@ pipeline {
 
     environment {
         DOTNET_VERSION = '6.0.x'
-        AWS_REGION = 'us-east-1'
+        AWS_REGION = 'eu-west-2'
         ECR_REPO = '123456789012.dkr.ecr.us-east-1.amazonaws.com/nunit-sample'
-        IMAGE_TAG = 'latest'
     }
 
     tools {
@@ -15,7 +14,12 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git 'https://github.com/dodyg/practical-aspnetcore.git'
+                git branch: 'net6.0', url: 'https://github.com/dodyg/practical-aspnetcore.git'
+                script {
+                    // Extract short commit hash and set it as IMAGE_TAG
+                    COMMIT_HASH = sh(script: 'git rev-parse --short HEAD', returnStdout: true).trim()
+                    env.IMAGE_TAG = COMMIT_HASH
+                }
             }
         }
 
@@ -59,18 +63,17 @@ pipeline {
                         credentialsId: 'aws-credentials'
                     ]]) {
                         script {
-                            // Authenticate to ECR
+                            def imageFullName = "${ECR_REPO}:${env.IMAGE_TAG}"
+
+                            // Authenticate to AWS ECR
                             sh """
                                 aws configure set region ${AWS_REGION}
                                 aws ecr get-login-password --region ${AWS_REGION} | \
                                 docker login --username AWS --password-stdin ${ECR_REPO}
                             """
 
-                            // Build and tag Docker image
-                            def imageFullName = "${ECR_REPO}:${IMAGE_TAG}"
+                            // Build and push Docker image
                             sh "docker build -t ${imageFullName} ."
-
-                            // Push image to ECR
                             sh "docker push ${imageFullName}"
                         }
                     }
@@ -87,7 +90,7 @@ pipeline {
             echo 'Pipeline failed.'
         }
         success {
-            echo 'Pipeline succeeded.'
+            echo "Pipeline succeeded. Image pushed to: ${ECR_REPO}:${env.IMAGE_TAG}"
         }
     }
 }
