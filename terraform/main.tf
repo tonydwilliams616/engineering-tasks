@@ -20,7 +20,7 @@ module "Ferries" {
 
 module "cloudfront-logs" {
   source                     = "./modules"
-  enable_versioning          = true
+  enable_versioning          = false
   enable_cloudfront_policy   = true
   cloudfront_distribution_id = "EDFDVBD632BHDS5"
   log_prefix                 = "cloudfront-logs/"
