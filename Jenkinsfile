@@ -80,6 +80,12 @@ pipeline {
                 }
             }
         }
+
+        stage('Deployment') {
+            steps {
+                echo 'Deployment to ECS'
+            }
+        }
     }
 
     post {
