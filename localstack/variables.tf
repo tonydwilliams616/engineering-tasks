@@ -26,3 +26,9 @@ variable "cloudfront-logs" {
   default     = "cloudfront-logs"
   type        = string
 }
+
+variable "encryption" {
+  description = "AWS S3 encryption type used at rest for buckets"
+  default     = "AES256"
+  type        = string
+}

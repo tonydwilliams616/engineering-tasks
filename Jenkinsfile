@@ -4,7 +4,7 @@ pipeline {
     environment {
         DOTNET_VERSION = '6.0.x'
         AWS_REGION = 'eu-west-2'
-        ECR_REPO = '123456789012.dkr.ecr.us-east-1.amazonaws.com/nunit-sample'
+        ECR_REPO = '123456789012.dkr.ecr.eu-west-2.amazonaws.com/nunit-sample'
     }
 
     tools {
